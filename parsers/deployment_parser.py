@@ -11,6 +11,10 @@ class DeploymentParser(BaseParser):
         """Parse YAML content and return Deployment objects"""
         deployments = []
         documents = self.split_documents(yaml_content)
+        print("Documents found:::", len(documents))
+
+        for docs in documents:
+            print(docs)
         
         for doc in documents:
             if self.can_parse(doc):
