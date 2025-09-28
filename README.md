@@ -60,18 +60,8 @@ helm-template-refactoring/
 - Python 3.8 or higher
 - Helm 3.x (for validation only)
 
-### Setup
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/helm-template-refactoring.git
-cd helm-template-refactoring
-```
-
 2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+
 
 ### Dependencies
 - `PyYAML>=6.0` - YAML parsing
