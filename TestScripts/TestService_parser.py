@@ -44,7 +44,15 @@ def test_service_parser():
                 print(f"\n Service Name: {svc.metadata.name}")
                 print(f" Service Type: {svc.service_type}")
                 print(f" Selector: {svc.selector}")
-                print(f" Ports:")
+
+                if not svc.ports:
+                    print(f"\nNo ports defined for {svc.metadata.name}")
+                else:
+                    print(" Ports:")
+                    for port in svc.ports:
+                        print(f"  - {port.name}: {port.port} -> {port.target_port} ({port.protocol})")
+
+
     except Exception as e:
         print(f"Error parsing file: {e}")
         print("\nDetailed error trace:")
