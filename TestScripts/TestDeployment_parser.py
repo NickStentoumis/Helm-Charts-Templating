@@ -63,7 +63,7 @@ def test_deployment_parser():
         print(f" Found {len(deployments)} deployment(s)")
         
         for dep in deployments:
-            print(f"\n   📦 Deployment: {dep.metadata.name}")
+            print(f"\n    Deployment: {dep.metadata.name}")
             print(f"      API Version: {dep.api_version}")
             print(f"      Replicas: {dep.replicas}")
             print(f"      Service Account: {dep.service_account_name}")
