@@ -1,7 +1,7 @@
 # extractors/pattern_extractor.py
 from typing import Dict, Any, List, Set, Tuple
 from collections import defaultdict
-from models import Deployment, Service, ServiceAccount, KubernetesResource
+from models import Deployment, Service, KubernetesResource
 
 
 class PatternExtractor:
@@ -12,7 +12,7 @@ class PatternExtractor:
         self.services: List[Service] = []
         self.service_accounts: List[ServiceAccount] = []
         self.common_patterns: Dict[str, Any] = {}
-    
+    7
     def add_resources(self, resources: List[KubernetesResource]):
         """Add resources for pattern extraction"""
         for resource in resources:

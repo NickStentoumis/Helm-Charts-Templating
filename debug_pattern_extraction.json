@@ -1,0 +1,122 @@
+{
+  "parsing_stats": {
+    "files_processed": 12,
+    "deployments_parsed": 12,
+    "services_parsed": 12
+  },
+  "extraction_stats": {
+    "deployments_in_extractor": 12,
+    "services_in_extractor": 12
+  },
+  "patterns": {
+    "deployment_patterns": {
+      "common_security_context": {
+        "runAsNonRoot": true
+      },
+      "common_resource_limits": {},
+      "common_probes": {
+        "common_liveness": {},
+        "common_readiness": {}
+      },
+      "common_env_patterns": [],
+      "termination_grace_periods": []
+    },
+    "service_patterns": {
+      "service_types": {
+        "ClusterIP": 12
+      },
+      "port_patterns": {},
+      "common_selectors": {}
+    },
+    "service_account_patterns": {
+      "common_annotations": {},
+      "all_have_annotations": true
+    },
+    "cross_resource_patterns": {
+      "matched_resources": 11,
+      "naming_patterns": {
+        "common_suffixes": {
+          "cart": 1,
+          "external": 1
+        },
+        "common_prefixes": {
+          "redis": 1,
+          "frontend": 1
+        }
+      },
+      "service_account_coverage": 0.0
+    }
+  },
+  "sample_deployment": {
+    "api_version": "apps/v1",
+    "kind": "Deployment",
+    "metadata": "ResourceMetadata(name='adservice', labels={}, annotations={})",
+    "original_yaml": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "adservice"
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "app": "adservice"
+          }
+        },
+        "template": {
+          "spec": {
+            "containers": [
+              {
+                "name": "server"
+              }
+            ],
+            "serviceAccountName": "adservice",
+            "securityContext": {
+              "runAsNonRoot": true
+            }
+          }
+        }
+      }
+    },
+    "replicas": 1,
+    "selector": {
+      "matchLabels": {
+        "app": "adservice"
+      }
+    },
+    "pod_security_context": {
+      "runAsNonRoot": true
+    },
+    "service_account_name": "adservice",
+    "containers": [
+      "Container(name='server', image='', ports=[], env=[], resources={}, security_context={}, liveness_probe=None, readiness_probe=None, volume_mounts=[])"
+    ],
+    "init_containers": [],
+    "volumes": [],
+    "termination_grace_period": null
+  },
+  "sample_service": {
+    "api_version": "v1",
+    "kind": "Service",
+    "metadata": "ResourceMetadata(name='adservice', labels={}, annotations={})",
+    "original_yaml": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "adservice"
+      },
+      "spec": {
+        "selector": {
+          "app": "adservice"
+        },
+        "ports": []
+      }
+    },
+    "service_type": "ClusterIP",
+    "selector": {
+      "app": "adservice"
+    },
+    "ports": []
+  }
+}

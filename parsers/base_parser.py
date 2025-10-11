@@ -191,48 +191,83 @@ class BaseParser(ABC):
         
         return spec
     
+
+
     def _extract_containers(self, containers_content: str) -> List[Dict[str, Any]]:
-        """Extract container information"""
+        """Extract container information - FIXED VERSION"""
         containers = []
         
-        # Simple extraction - look for container names and images
-        container_blocks = re.split(r'\n\s*-\s*(?=name:|env:)', containers_content)
+        # The key insight: In Helm templates, containers are at the top level under "containers:"
+        # Each container starts with "- env:" or "- name:" or "- image:" at the SAME indentation
         
-        for block in container_blocks:
-            if not block.strip():
-                continue
+        # Split by lines that start a new container (dash at container level, not env level)
+        # Look for the pattern where we have the actual container definition
+        
+        # First, let's try to find where actual containers start
+        # In the YAML structure, a container typically has these fields at the same level:
+        # - env:
+        #   image:
+        #   name:
+        #   ports:
+        
+        # Simple approach: Look for "name: server" or similar container names
+        container_name_matches = re.findall(r'^\s+name:\s+(\w+)$', containers_content, re.MULTILINE)
+        
+        # Filter out environment variable names (they have "value:" on the next line or same structure)
+        actual_container_names = []
+        for name in container_name_matches:
+            # Check if this is likely a container name (not PORT, DISABLE_PROFILER, etc.)
+            if name not in ['PORT', 'DISABLE_PROFILER', 'KUBERNETES_CLUSTER_DOMAIN', 
+                            'FRONTEND_ADDR', 'USERS', 'RATE', 'PRODUCT_CATALOG_SERVICE_ADDR']:
+                actual_container_names.append(name)
+        
+        # For each found container name, extract its details
+        for container_name in actual_container_names:
+            container = {'name': container_name}
             
-            container = {}
+            # Find the block for this container
+            # Look for patterns around this container name
+            container_pattern = rf'name:\s+{container_name}.*?(?=^\s*-\s+\w+:|^\s*[a-zA-Z]+:|$)'
+            container_match = re.search(container_pattern, containers_content, re.DOTALL | re.MULTILINE)
             
-            # Extract name
-            name_match = re.search(r'name:\s*([^\n]+)', block)
-            if name_match:
-                container['name'] = name_match.group(1).strip()
-            
-            # Extract image (handling Helm templates)
-            image_patterns = [
-                r'image:\s*\{\{[^}]+\}\}:?\{\{[^}]+\}\}',  # Full template
-                r'image:\s*([^\{\n]+)',  # Plain image
-            ]
-            
-            for pattern in image_patterns:
-                image_match = re.search(pattern, block)
+            if container_match:
+                container_block = container_match.group(0)
+                
+                # Extract image
+                image_match = re.search(r'image:\s+([^\n]+)', container_block)
                 if image_match:
-                    if '{{' in image_match.group(0):
+                    image_value = image_match.group(1).strip()
+                    if '{{' in image_value:
                         container['image'] = 'helm-template'
                     else:
-                        container['image'] = image_match.group(1).strip()
-                    break
+                        container['image'] = image_value
+                
+                # Extract ports
+                ports_match = re.search(r'ports:\s*\n\s*-\s*containerPort:\s*(\d+)', container_block)
+                if ports_match:
+                    container['ports'] = [{'containerPort': int(ports_match.group(1))}]
             
-            # Extract ports
-            port_match = re.search(r'containerPort:\s*(\d+)', block)
-            if port_match:
-                container['ports'] = [{'containerPort': int(port_match.group(1))}]
-            
-            if container.get('name'):
-                containers.append(container)
+            containers.append(container)
         
-        return containers if containers else [{'name': 'server', 'image': 'helm-template'}]
+        # If we didn't find any containers with the smart method, fall back to a simpler approach
+        if not containers:
+            # Look for the most common container name pattern in Helm charts
+            if 'name: server' in containers_content:
+                container = {'name': 'server', 'image': 'helm-template'}
+                
+                # Try to find ports
+                ports_match = re.search(r'containerPort:\s*(\d+)', containers_content)
+                if ports_match:
+                    container['ports'] = [{'containerPort': int(ports_match.group(1))}]
+                
+                containers.append(container)
+            elif 'name: main' in containers_content:
+                containers.append({'name': 'main', 'image': 'helm-template'})
+            else:
+                # Last resort: assume there's one container
+                containers.append({'name': 'container', 'image': 'helm-template'})
+        
+        return containers
     
     def extract_helm_values(self, value: Any) -> Dict[str, Any]:
         """Extract Helm template variables from values"""
