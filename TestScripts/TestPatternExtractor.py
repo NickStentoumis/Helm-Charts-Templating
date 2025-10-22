@@ -30,7 +30,7 @@ def debug_parsing(directory_path: str):
     
     dir_path = Path(directory_path)
     if not dir_path.exists():
-        print(f"❌ Directory not found: {directory_path}")
+        print(f"Directory not found: {directory_path}")
         return
     
     # Create parsers
@@ -49,14 +49,14 @@ def debug_parsing(directory_path: str):
     
     # Parse each file with detailed output
     for file_path in yaml_files:
-        print(f"\n📄 Processing: {file_path.name}")
+        print(f"\nProcessing: {file_path.name}")
         print("-" * 40)
         
         try:
             # Parse deployments
             deployments = dep_parser.parse_file(file_path)
             if deployments:
-                print(f"  ✓ Found {len(deployments)} deployment(s)")
+                print(f" Found {len(deployments)} deployment(s)")
                 for dep in deployments:
                     print(f"    - {dep.metadata.name if dep.metadata else 'NO NAME'}")
                     print(f"      Containers: {len(dep.containers)}")
@@ -77,7 +77,7 @@ def debug_parsing(directory_path: str):
             # Parse services
             services = svc_parser.parse_file(file_path)
             if services:
-                print(f"  ✓ Found {len(services)} service(s)")
+                print(f" Found {len(services)} service(s)")
                 for svc in services:
                     print(f"    - {svc.metadata.name if svc.metadata else 'NO NAME'}")
                     print(f"      Type: {svc.service_type}")
@@ -93,10 +93,10 @@ def debug_parsing(directory_path: str):
             # SKIPPING SERVICE ACCOUNTS
             
             if not deployments and not services:
-                print(f"  ⚠ No resources found in this file")
+                print(f"   No resources found in this file")
                 
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f"   Error: {e}")
             import traceback
             traceback.print_exc()
     
@@ -110,7 +110,7 @@ def debug_parsing(directory_path: str):
     print(f"Total Resources: {len(all_resources)}")
     
     if not all_resources:
-        print("\n❌ NO RESOURCES WERE PARSED!")
+        print("\n NO RESOURCES WERE PARSED!")
         print("This explains why pattern extraction is empty.")
         print("\nPossible causes:")
         print("1. The parser isn't handling Helm templates correctly")
@@ -194,7 +194,7 @@ def debug_parsing(directory_path: str):
     with open(debug_file, 'w') as f:
         json.dump(debug_info, f, indent=2, default=str)
     
-    print(f"\n💾 Debug info saved to: {debug_file}")
+    print(f"\n Debug info saved to: {debug_file}")
     
     return patterns
 
