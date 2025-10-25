@@ -1,0 +1,7 @@
+# Python requirements for Helm Chart Refactoring Tool V2
+
+# Core dependency
+PyYAML>=6.0.1
+
+# Optional (for validation)
+# helm CLI tool (not a Python package, install separately)

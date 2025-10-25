@@ -1,10 +1,3 @@
-# models/__init__.py
-from .base import KubernetesResource, ResourceMetadata
-from .deployment import Deployment, Container
-from .service import Service, ServicePort
-#from .service_account import ServiceAccount
+from .resource import ServiceResources, ChartInfo
 
-__all__ = [
-    'KubernetesResource', 'ResourceMetadata',
-    'Deployment', 'Container', 
-    'Service', 'ServicePort']
+__all__ = ['ServiceResources', 'ChartInfo']
